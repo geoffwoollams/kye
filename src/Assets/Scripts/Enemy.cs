@@ -102,8 +102,8 @@ public class Enemy : MonoBehaviour
         var t = Common.GetItemBy(direction, _item);
         if(t == null)
             Common.MoveItemBy(direction, _item);
-        else if(_wandering && t.IsBlacky)
-            t._blacky.Consume(_item);
+        else if(_wandering && t.IsBlackhole)
+            t._blackhole.Consume(_item);
         
         _nextMove = Time.time + Speed;
         return;

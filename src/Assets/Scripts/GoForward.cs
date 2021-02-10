@@ -34,9 +34,9 @@ public class GoForward : MonoBehaviour
                 if(spotItem.IsSploder)
                     spotItem.GetComponent<Sploder>().Tock();
 
-                if(spotItem.IsBlacky)
+                if(spotItem.IsBlackhole)
                 {
-                    spotItem.GetComponent<Blacky>().Consume(_item);
+                    spotItem.GetComponent<Blackhole>().Consume(_item);
                     return;
                 }
                 else if(spotItem.IsClocker && spotItem.IsAntiClocker)

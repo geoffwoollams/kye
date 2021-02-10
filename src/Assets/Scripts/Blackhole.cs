@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Blacky : MonoBehaviour
+public class Blackhole : MonoBehaviour
 {
     public Sprite[] SpritePool;
 

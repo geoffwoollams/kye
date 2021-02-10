@@ -46,7 +46,7 @@ public class Common : MonoBehaviour
         else if(itemCode == "c") return GameController.Instance.ItemClocker;
         else if(itemCode == "A") return GameController.Instance.ItemAutoSlider;
         else if(itemCode == "F") return GameController.Instance.ItemAutoRocky;
-        else if(itemCode == "H") return GameController.Instance.ItemBlacky;
+        else if(itemCode == "H") return GameController.Instance.ItemBlackhole;
         else if(itemCode == "f") return GameController.Instance.ItemDoorLR;
         else if(itemCode == "g") return GameController.Instance.ItemDoorRL;
         else if(itemCode == "h") return GameController.Instance.ItemDoorUD;

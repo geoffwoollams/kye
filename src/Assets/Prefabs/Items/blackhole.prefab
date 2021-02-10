@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 5496572443050007809}
   - component: {fileID: 1241939493203601828}
   m_Layer: 0
-  m_Name: blacky
+  m_Name: blackhole
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -107,7 +107,7 @@ MonoBehaviour:
   IsStickerUD: 0
   IsStickable: 1
   IsStuckToSticker: 0
-  IsBlacky: 1
+  IsBlackhole: 1
   IsDoor: 0
   IsPushable: 0
   CanPush: 0
@@ -117,7 +117,7 @@ MonoBehaviour:
   Direction: {x: 0, y: 0}
   x: 0
   y: 0
-  _blacky: {fileID: 0}
+  _blackhole: {fileID: 0}
   _sploder: {fileID: 0}
 --- !u!114 &1241939493203601828
 MonoBehaviour:

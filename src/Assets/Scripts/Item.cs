@@ -17,7 +17,7 @@ public class Item : MonoBehaviour
     public bool IsStickable;
     [HideInInspector]
     public bool IsStuckToSticker;
-    public bool IsBlacky;
+    public bool IsBlackhole;
     public bool IsDoor;
     public bool IsPushable;
     public bool CanPush;
@@ -34,7 +34,7 @@ public class Item : MonoBehaviour
 
     private GoForward _goForward;
     private Auto _auto;
-    public Blacky _blacky;
+    public Blackhole _blackhole;
     private Enemy _enemy;
     private Timer _timer;
     public Sploder _sploder;
@@ -55,7 +55,7 @@ public class Item : MonoBehaviour
             if(_enemy && !IsStuckToSticker) _enemy.Tick();
 
             if(_auto) _auto.Tick();
-            if(_blacky) _blacky.Tick();
+            if(_blackhole) _blackhole.Tick();
             if(_timer) _timer.Tick();
             if(_sploder) _sploder.Tick();
         }
@@ -90,7 +90,7 @@ public class Item : MonoBehaviour
     {
         _goForward = GetComponent<GoForward>();
         _auto = GetComponent<Auto>();
-        _blacky = GetComponent<Blacky>();
+        _blackhole = GetComponent<Blackhole>();
         _enemy = GetComponent<Enemy>();
         _timer = GetComponent<Timer>();
         _sploder = GetComponent<Sploder>();
@@ -143,7 +143,7 @@ public class Item : MonoBehaviour
         if(spotItem == null)
             return true;
 
-        if(spotItem.IsBlacky)
+        if(spotItem.IsBlackhole)
             return true;
         
         return false;

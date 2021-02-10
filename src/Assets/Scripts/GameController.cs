@@ -40,7 +40,7 @@ public class GameController : MonoBehaviour
     public GameObject ItemBouncerUp, ItemBouncerDown, ItemBouncerLeft, ItemBouncerRight;
     public GameObject ItemRockyUp, ItemRockyDown, ItemRockyLeft, ItemRockyRight;
     public GameObject ItemTwister, ItemGnasher, ItemBlob, ItemVirus, ItemSpike;
-    public GameObject ItemAntiClocker, ItemClocker, ItemAutoSlider, ItemAutoRocky, ItemBlacky;
+    public GameObject ItemAntiClocker, ItemClocker, ItemAutoSlider, ItemAutoRocky, ItemBlackhole;
     public GameObject ItemDoorLR, ItemDoorRL, ItemDoorUD, ItemDoorDU;
     public GameObject ItemTimer3, ItemTimer4, ItemTimer5, ItemTimer6, ItemTimer7, ItemTimer8, ItemTimer9;
     public GameObject ItemSploder, SplodeEffect;
@@ -228,11 +228,6 @@ public class GameController : MonoBehaviour
     {
         HideMainMenu();
         HelpPanel.SetActive(true);
-    }
-
-    public void ShowEditor()
-    {
-
     }
 
     public void ShowLevelPicker()
@@ -920,11 +915,11 @@ public class GameController : MonoBehaviour
             item._sploder.Tock();
         }
 
-        if((item.KillsPlayer || item.IsBlacky) && !CheatManager.GodMode)
+        if((item.KillsPlayer || item.IsBlackhole) && !CheatManager.GodMode)
         {
-            if(item.IsBlacky)
+            if(item.IsBlackhole)
             {
-                item.GetComponent<Blacky>().Consume(Kye);
+                item.GetComponent<Blackhole>().Consume(Kye);
             }
             
             KillPlayer();
@@ -957,9 +952,9 @@ public class GameController : MonoBehaviour
                 item.Move((int)_input.x, (int)_input.y, true);
                 item.IsStuckToSticker = false;
             }
-            else if(itemAtSpot.IsBlacky)
+            else if(itemAtSpot.IsBlackhole)
             {
-                itemAtSpot.GetComponent<Blacky>().Consume(item);
+                itemAtSpot.GetComponent<Blackhole>().Consume(item);
             }
             else
                 canMove = false;
