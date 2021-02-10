@@ -307,7 +307,6 @@ public class GameController : MonoBehaviour
 
     public void Dev()
     {
-        // do stuff on ui dev button click
         string level = "DEV" + "\n";
         level += "Development Test Level" + "\n";
         level += "Yay!" + "\n";
@@ -334,6 +333,7 @@ public class GameController : MonoBehaviour
         level += "555555555555555555555555555555" + "\n";
 
         LoadLevelWithString(level);
+        AppController.Instance.settings.LastLevelPlayed = "DEV";
     }
 
     public void LoadLevelWithString(string level)
@@ -368,10 +368,15 @@ public class GameController : MonoBehaviour
         AppController.Instance.settings.LastLevelPlayed = levelName;
         levelName = levelName.ToLower();
 
-        if(Levels.Classic.ContainsKey(levelName))
+        if (Levels.Classic.ContainsKey(levelName))
         {
-            CurrentLevelID = LevelNameToID(levelName);            
+            CurrentLevelID = LevelNameToID(levelName);
             LoadLevel(Levels.Classic[levelName]);
+            return;
+        }
+        else if (levelName == "dev")
+        {
+            Dev();
             return;
         }
 
@@ -457,7 +462,12 @@ public class GameController : MonoBehaviour
         // cheat code first so it can also be a level - for one off level cheats etc
         CheatManager.TryCheat(attempt);
 
-        if(!Levels.Classic.ContainsKey(attempt.ToLower()))
+        if(attempt == "dev")
+        {
+            Dev();
+            return;
+        }
+        else if(!Levels.Classic.ContainsKey(attempt.ToLower()))
         {
             LoadLevelInput.text = "No such level...";
             return;
@@ -728,8 +738,14 @@ public class GameController : MonoBehaviour
             moveX = 0;
         if(moveY != 0f && !Common.CanOccupyBy(0, moveY, Kye))
             moveY = 0;
-        if(moveX != 0f && moveY != 0f && !Common.CanOccupyBy(moveX, moveY, Kye))
-            moveX = moveY = 0;
+
+        if (moveX != 0f && moveY != 0f)
+        {
+            if(!Common.CanOccupyBy(moveX, moveY, Kye))
+                moveX = moveY = 0;
+            else if (!Common.CanOccupyBy(moveX, 0, Kye) && !Common.CanOccupyBy(0, moveY, Kye))
+                moveX = moveY = 0;
+        }
 
         _input.x = moveX;
         _input.y = moveY;

@@ -58,7 +58,6 @@ public class Common : MonoBehaviour
         else if(itemCode == "y") return GameController.Instance.ItemTimer7;
         else if(itemCode == "x") return GameController.Instance.ItemTimer8;
         else if(itemCode == "w") return GameController.Instance.ItemTimer9;
-        // v3 new
         else if(itemCode == "!") return GameController.Instance.ItemSploder;
         
         return null;
@@ -69,17 +68,19 @@ public class Common : MonoBehaviour
         if (item == null)
             return false;
 
-        var spotItem = GetItem(x, y);
         var direction = new Vector2(x, y);
         x += (int)item.transform.position.x;
         y += (int)item.transform.position.y;
 
         if(!InBounds(x, y))
             return false;
-        
-        if(!IsEmpty(x, y))
+
+        var spotItem = GetItem(x, y);
+        if (spotItem)
         {
-            if(spotItem && !spotItem.CanCurrentlyBePushed(direction))
+            if (spotItem.DestroyOnPlayerContact)
+                return true;
+            if (!spotItem.CanCurrentlyBePushed(direction))
                 return false;
         }
         
@@ -102,7 +103,10 @@ public class Common : MonoBehaviour
         if (item == null)
             return false;
 
-        // intended to put multiple checks in here but apparently only doing 1 which doesnt even need item
+        Item spotItem = GetItem(x, y);
+        if (spotItem)
+            return false;
+
         if (!InBounds(x, y)) return false;
 
         return true;

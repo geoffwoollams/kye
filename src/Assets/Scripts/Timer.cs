@@ -20,9 +20,15 @@ public class Timer : MonoBehaviour
         if(Time.time < _goTime)
             return;
 
-        if(NextTimerPrefab != null)
-            Instantiate(NextTimerPrefab, transform.position, transform.rotation, transform.parent);
+        Item newTimerItem = null;
+
+        if (NextTimerPrefab != null)
+        {
+            GameObject newTimer = Instantiate(NextTimerPrefab, transform.position, transform.rotation, transform.parent);
+            newTimerItem = newTimer.GetComponent<Item>();
+        }
         
         Common.DestroyItem(_item, false);
+        Common.SetItem(transform.position.x, transform.position.y, newTimerItem);
     }
 }

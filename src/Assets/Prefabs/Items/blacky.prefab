@@ -48,6 +48,7 @@ SpriteRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -109,6 +110,7 @@ MonoBehaviour:
   IsBlacky: 1
   IsDoor: 0
   IsPushable: 0
+  CanPush: 0
   DestroyOnPlayerContact: 0
   KillsPlayer: 0
   Roundness: 0
@@ -130,10 +132,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   SpritePool:
-  - {fileID: 21300000, guid: 285417f6f1f460355aff1c5bf6ad98bb, type: 3}
-  - {fileID: 21300000, guid: ddda33dd464ee1dc384ed6df843a0ef3, type: 3}
-  - {fileID: 21300000, guid: c2cbdff737a4af543b1f727dc32f7ede, type: 3}
-  - {fileID: 21300000, guid: 07f296f7c3b5758eca383100007e7b2d, type: 3}
   - {fileID: 21300000, guid: 285417f6f1f460355aff1c5bf6ad98bb, type: 3}
   - {fileID: 21300000, guid: ddda33dd464ee1dc384ed6df843a0ef3, type: 3}
   - {fileID: 21300000, guid: c2cbdff737a4af543b1f727dc32f7ede, type: 3}
