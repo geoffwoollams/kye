@@ -33,10 +33,18 @@ public class Sploder : MonoBehaviour
         // Runs when item has been moved or exploded nearby
         remainingMoves -= moves;
 
-        if(remainingMoves <= 1)
-            _spriteRenderer.sprite = Danger;
+        if (remainingMoves <= 1)
+        {
+            var rotate = gameObject.AddComponent<RotateEvery>();
+            rotate.RotateAmount = 22.5f;
+            rotate.Timer = 0.1f;
 
-        if(remainingMoves > 0)
+            //_spriteRenderer.sprite = Danger;
+        }
+        
+        transform.Rotate(0, 0, 45 * -1);
+
+        if (remainingMoves > 0)
             return;
         
         Splode();

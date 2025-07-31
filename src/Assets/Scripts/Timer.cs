@@ -12,7 +12,7 @@ public class Timer : MonoBehaviour
     void Awake()
     {
         _item = GetComponent<Item>();
-        _goTime = Time.time + 1f;
+        _goTime = Time.time + 2.5f;
     }
     
     public void Tick()

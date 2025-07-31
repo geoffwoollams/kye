@@ -25,6 +25,12 @@ public class Blackhole : MonoBehaviour
 
     public bool Consume(Item item)
     {
+        if (item && item.IsKye)
+        {
+            Trigger();
+            return true;
+        }
+
         if (_munches > 0)
             return false;
         else if (_munches == 0)

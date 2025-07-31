@@ -39,7 +39,7 @@ public class Auto : MonoBehaviour
             if(isEmpty)
             {
                 var spawn = Instantiate(Prefab, spot, transform.localRotation, transform.parent);
-                spawn.transform.Rotate(0, 0, -90);
+                //spawn.transform.Rotate(0, 0, -90);
                 var spawnItem = spawn.GetComponent<Item>();
                 spawnItem.Direction = _item.Direction;
                 GameController.Instance.NewItem(spawnItem);

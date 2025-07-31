@@ -21,7 +21,7 @@ public class SpriteLoop : MonoBehaviour
 
     void Update()
     {
-        if(Time.time >= _nextChange) {
+        if(Time.unscaledTime >= _nextChange) {
             _current++;
             if(_current > SpritePool.Length - 1)
                 _current = 0;
@@ -31,7 +31,7 @@ public class SpriteLoop : MonoBehaviour
             if(_image != null)
                 _image.sprite = SpritePool[_current];
 
-            _nextChange = Time.time + Delay;
+            _nextChange = Time.unscaledTime + Delay;
         }
     }
 }

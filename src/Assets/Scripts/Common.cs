@@ -63,6 +63,198 @@ public class Common : MonoBehaviour
         return null;
     }
 
+    public static GameObject UnitPrefab(string itemName)
+    {
+        var code = GetKyeCodeFromItem(itemName);
+        var prefab = GetPrefabFromItemChar(code);
+        return prefab;
+    }
+
+    public static string ItemNameToNiceName(string itemName)
+    {
+        if (itemName == "clear") return "Eraser";
+        else if (itemName == "kye") return "Kye";
+        else if (itemName == "diamond") return "Diamond";
+
+        else if (itemName == "wall1") return "Wall";
+        else if (itemName == "wall2") return "Wall";
+        else if (itemName == "wall3") return "Wall";
+        else if (itemName == "wall4") return "Wall";
+        else if (itemName == "wall5") return "Wall";
+        else if (itemName == "wall6") return "Wall";
+        else if (itemName == "wall7") return "Wall";
+        else if (itemName == "wall8") return "Wall";
+        else if (itemName == "wall9") return "Wall";
+
+        else if (itemName == "earth") return "Earth";
+        else if (itemName == "blocksquare") return "Block Square";
+        else if (itemName == "blockrocky") return "Block Rocky";
+        else if (itemName == "sliderup") return "Slider Up";
+        else if (itemName == "sliderdown") return "Slider Down";
+        else if (itemName == "sliderleft") return "Slider Left";
+        else if (itemName == "sliderright") return "Slider Right";
+
+        else if (itemName == "stickertb") return "Sticker TB";
+        else if (itemName == "stickerlr") return "Sticker LR";
+        else if (itemName == "bouncerup") return "Bouncer Up";
+        else if (itemName == "bouncerdown") return "Bouncer Down";
+        else if (itemName == "bouncerleft") return "Bouncer Left";
+        else if (itemName == "bouncerright") return "Bouncer Right";
+        else if (itemName == "rockyup") return "Rocky Up";
+        else if (itemName == "rockydown") return "Rocky Down";
+        else if (itemName == "rockyleft") return "Rocky Left";
+        else if (itemName == "rockyright") return "Rocky Right";
+
+        else if (itemName == "twister") return "Twister";
+        else if (itemName == "gnasher") return "Gnasher";
+        else if (itemName == "blob") return "Blob";
+        else if (itemName == "virus") return "Virus";
+        else if (itemName == "spike") return "Spike";
+
+        else if (itemName == "anticlocker") return "Anti-Clocker";
+        else if (itemName == "clocker") return "Clocker";
+        else if (itemName == "autoslider") return "Auto Slider";
+        else if (itemName == "autorocky") return "Auto Rocky";
+        else if (itemName == "blackhole") return "Blackhole";
+        else if (itemName == "doorlr") return "Door LR";
+        else if (itemName == "doorrl") return "Door RL";
+        else if (itemName == "doorud") return "Door UD";
+        else if (itemName == "doordu") return "Door DU";
+
+        else if (itemName == "timer3") return "Timer 3";
+        else if (itemName == "timer4") return "Timer 4";
+        else if (itemName == "timer5") return "Timer 5";
+        else if (itemName == "timer6") return "Timer 6";
+        else if (itemName == "timer7") return "Timer 7";
+        else if (itemName == "timer8") return "Timer 8";
+        else if (itemName == "timer9") return "Timer 9";
+
+        else if (itemName == "sploder") return "Sploder";
+
+        return "Unknown";
+    }
+    
+    public static String GetKyeCodeFromItem(string itemName)
+    {
+        if (itemName == "clear") return " ";
+        else if (itemName == "kye") return "K";
+        else if (itemName == "diamond") return "*";
+
+        else if (itemName == "wall1") return "7";
+        else if (itemName == "wall2") return "8";
+        else if (itemName == "wall3") return "9";
+        else if (itemName == "wall4") return "4";
+        else if (itemName == "wall5") return "5";
+        else if (itemName == "wall6") return "6";
+        else if (itemName == "wall7") return "1";
+        else if (itemName == "wall8") return "2";
+        else if (itemName == "wall9") return "3";
+
+        else if (itemName == "earth") return "e";
+        else if (itemName == "blocksquare") return "b";
+        else if (itemName == "blockrocky") return "B";
+        else if (itemName == "sliderup") return "u";
+        else if (itemName == "sliderdown") return "d";
+        else if (itemName == "sliderleft") return "l";
+        else if (itemName == "sliderright") return "r";
+
+        else if (itemName == "stickertb") return "s";
+        else if (itemName == "stickerlr") return "S";
+        else if (itemName == "bouncerup") return "U";
+        else if (itemName == "bouncerdown") return "D";
+        else if (itemName == "bouncerleft") return "L";
+        else if (itemName == "bouncerright") return "R";
+        else if (itemName == "rockyup") return "^";
+        else if (itemName == "rockydown") return "v";
+        else if (itemName == "rockyleft") return "<";
+        else if (itemName == "rockyright") return ">";
+
+        else if (itemName == "twister") return "T";
+        else if (itemName == "gnasher") return "E";
+        else if (itemName == "blob") return "C";
+        else if (itemName == "virus") return "~";
+        else if (itemName == "spike") return "[";
+
+        else if (itemName == "anticlocker") return "a";
+        else if (itemName == "clocker") return "c";
+        else if (itemName == "autoslider") return "A";
+        else if (itemName == "autorocky") return "F";
+        else if (itemName == "blackhole") return "H";
+        else if (itemName == "doorlr") return "f";
+        else if (itemName == "doorrl") return "g";
+        else if (itemName == "doorud") return "h";
+        else if (itemName == "doordu") return "i";
+
+        else if (itemName == "timer3") return "}";
+        else if (itemName == "timer4") return "|";
+        else if (itemName == "timer5") return "{";
+        else if (itemName == "timer6") return "z";
+        else if (itemName == "timer7") return "y";
+        else if (itemName == "timer8") return "x";
+        else if (itemName == "timer9") return "w";
+
+        else if (itemName == "sploder") return "!";
+
+        return " ";
+    }
+
+    public static string GetItemNameFromKyeCode(string kyeCode)
+    {
+        if (kyeCode == "") return "clear";
+        else if (kyeCode == "K") return "kye";
+        else if (kyeCode == "*") return "diamond";
+        else if (kyeCode == "5") return "wall5";
+        else if (kyeCode == "7") return "wall1";
+        else if (kyeCode == "8") return "wall2";
+        else if (kyeCode == "9") return "wall3";
+        else if (kyeCode == "4") return "wall4";
+        else if (kyeCode == "6") return "wall6";
+        else if (kyeCode == "1") return "wall7";
+        else if (kyeCode == "2") return "wall8";
+        else if (kyeCode == "3") return "wall9";
+        else if (kyeCode == "e") return "earth";
+        else if (kyeCode == "b") return "blocksquare";
+        else if (kyeCode == "B") return "blockrocky";
+        else if (kyeCode == "u") return "sliderup";
+        else if (kyeCode == "d") return "sliderdown";
+        else if (kyeCode == "l") return "sliderleft";
+        else if (kyeCode == "r") return "sliderright";
+        else if (kyeCode == "s") return "stickertb";
+        else if (kyeCode == "S") return "stickerlr";
+        else if (kyeCode == "U") return "bouncerup";
+        else if (kyeCode == "D") return "bouncerdown";
+        else if (kyeCode == "L") return "bouncerleft";
+        else if (kyeCode == "R") return "bouncerright";
+        else if (kyeCode == "^") return "rockyup";
+        else if (kyeCode == "v") return "rockydown";
+        else if (kyeCode == "<") return "rockyleft";
+        else if (kyeCode == ">") return "rockyright";
+        else if (kyeCode == "T") return "twister";
+        else if (kyeCode == "E") return "gnasher";
+        else if (kyeCode == "C") return "blob";
+        else if (kyeCode == "~") return "virus";
+        else if (kyeCode == "[") return "spike";
+        else if (kyeCode == "a") return "anticlocker";
+        else if (kyeCode == "c") return "clocker";
+        else if (kyeCode == "A") return "autoslider";
+        else if (kyeCode == "F") return "autorocky";
+        else if (kyeCode == "H") return "blackhole";
+        else if (kyeCode == "f") return "doorlr";
+        else if (kyeCode == "g") return "doorrl";
+        else if (kyeCode == "h") return "doorud";
+        else if (kyeCode == "i") return "doordu";
+        else if (kyeCode == "}") return "timer3";
+        else if (kyeCode == "|") return "timer4";
+        else if (kyeCode == "{") return "timer5";
+        else if (kyeCode == "z") return "timer6";
+        else if (kyeCode == "y") return "timer7";
+        else if (kyeCode == "x") return "timer8";
+        else if (kyeCode == "w") return "timer9";
+        else if (kyeCode == "!") return "sploder";
+
+        return "clear";
+    }
+
     public static bool CanOccupyBy(int x, int y, Item item)
     {
         if (item == null)
@@ -72,18 +264,22 @@ public class Common : MonoBehaviour
         x += (int)item.transform.position.x;
         y += (int)item.transform.position.y;
 
-        if(!InBounds(x, y))
+        if (!InBounds(x, y))
             return false;
 
         var spotItem = GetItem(x, y);
         if (spotItem)
         {
+            if (spotItem.IsBlackhole)
+                return true;
+            if (spotItem.IsDoor)
+                return true;
             if (spotItem.DestroyOnPlayerContact)
                 return true;
             if (!spotItem.CanCurrentlyBePushed(direction))
                 return false;
         }
-        
+
         return true;
     }
 
@@ -104,7 +300,10 @@ public class Common : MonoBehaviour
             return false;
 
         Item spotItem = GetItem(x, y);
-        if (spotItem)
+        if (spotItem && spotItem.IsDoor) {
+            //return false;
+        }
+        else if (spotItem)
             return false;
 
         if (!InBounds(x, y)) return false;
@@ -132,11 +331,11 @@ public class Common : MonoBehaviour
         var currentSpotItem = GetItem(item.transform.position.x, item.transform.position.y);
         var newSpotItem = GetItem(x, y);
 
-        if(item.IsKye && newSpotItem != null && newSpotItem.IsDoor)
+        if (item.IsKye && newSpotItem != null && newSpotItem.IsDoor)
         {
             SetItem(item.transform.position.x, item.transform.position.y, null);
         }
-        else if(item.IsKye && currentSpotItem != null && currentSpotItem.IsDoor)
+        else if (item.IsKye && currentSpotItem != null && currentSpotItem.IsDoor)
         {
             SetItem(x, y, item);
         }
@@ -189,6 +388,15 @@ public class Common : MonoBehaviour
     public static bool InBounds(int x, int y)
     {
         if(x >= 1 && x <= 28 && y >= 1 && y <= 18)
+            return true;
+        return false;
+    }
+
+    public static bool InOuterBounds(Vector2 position) { return InOuterBounds((int)position.x, (int)position.y); }
+    public static bool InOuterBounds(float x, float y) { return InOuterBounds((int)x, (int)y); }
+    public static bool InOuterBounds(int x, int y)
+    {
+        if(x >= 0f && x <= 30f && y >= 0f && y <= 20f)
             return true;
         return false;
     }

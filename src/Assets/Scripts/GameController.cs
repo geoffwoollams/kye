@@ -7,6 +7,8 @@ using UnityEngine.InputSystem;
 using UnityEngine.EventSystems;
 using System;
 using System.Linq;
+using SimpleFileBrowser;
+using System.Buffers.Text;
 
 public class GameController : MonoBehaviour
 {
@@ -20,7 +22,9 @@ public class GameController : MonoBehaviour
 
     public Transform CameraTransform;
 
-    public GameObject GamePanel, MainMenu, PauseMenu, HelpPanel, LevelPickerPanel, LevelFailed, LevelComplete;
+    public Canvas MainCanvas;
+
+    public GameObject GamePanel, MainMenu, PauseMenu, HelpPanel, EditorPanel, LevelPickerPanel, LevelFailed, LevelComplete;
     public GameObject PlayButton, LoadLevelButton, ResumeButton, LevelFailedButton, LevelCompleteButton;
     public GameObject HelpContentContainer;
     public TMPro.TMP_InputField LoadLevelInput;
@@ -54,7 +58,7 @@ public class GameController : MonoBehaviour
     //public Item.ItemCollection[,] ItemCollections = new Item.ItemCollection[30, 20];
 
     private Vector2 _input;
-    private Vector2Int _inputClickPosition, _lastInputClickPosition;
+    public Vector2Int _inputClickPosition, _lastInputClickPosition;
     private int _startLives = 3;
     private int _lives;
     private int _diamonds;
@@ -72,10 +76,19 @@ public class GameController : MonoBehaviour
 
     private float _timeSinceLevelLoaded;
     private float _lastTimeUpdate;
+
+    public LevelEditor levelEditor;
+    public GameObject levelEditorBackground;
+
+    public GameObject FrameUI, FrameSprites;
+
+    public static Dictionary<string, string> KyeFile = new Dictionary<string, string>();
     
     void Awake()
     {
         Instance = this;
+
+        LoadLocalFiles();
 
         LoadLevelPicker();
         ShowMainMenu();
@@ -95,6 +108,10 @@ public class GameController : MonoBehaviour
     private void AddToLevelPicker()
     {
         
+    }
+
+    private void LoadLocalFiles() {
+        //Levels.Classic.Add("test33333333","RklSU1QKSnVzdCBmb3IgcHJhY3RpY2UNClRoZSBmaXJzdCBsZXZlbCB3YXMgZm9yIHByYWN0aWNlLg0KNTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1DQo1VCAgIGUgICAgICAgSyogIGEgICAgZCBlICAgRTUNCjUgICAgYiA0NTU1NTYgICAgICAgIGEgIGIgICAgNQ0KNSAgICBiIGR2dnZ2ZCAgICAgICAgICAgYiAgICA1DQo1ICAgIGIgZHZ2dnZkICAgICAgICAgIGFiICAgIDUNCjVlYmJiZSBlZUJCZWUgICAgICAgYyAgIGViYmJlNQ0KNSAgICAgICAgICAgICAgIGEgICAgICAgICAgICA1DQo1IDhycmUgICAgICAgICAgICAgICAgYSBlbGw4IDUNCjUgNT4+ZSAgICAgIHMgIFMgICAgICAgIGU8PDUgNQ0KNSA1Pj5CICAgICAgICAgICAgICAgICAgQjw8NSA1DQo1IDU+PkIgICAgICAgICAgICAgICBiICBCPDw1IDUNCjUgNT4+ZSAgICAgIFMgIHMgICAgIFUgIGU8PDUgNQ0KNSAycnJlICAgICAgICAgICAgICAgYiAgZWxsMiA1DQo1ICAgICAgICAgICAgICAgICBiUmJiICAgICAgIDUNCjVlYmJiZSBlZWVlZWUgIDc1NTU1NTkgIGViYmJlNQ0KNSAgICBiIHVeXl5edSAgNSAgICAgNSAgYiAgICA1DQo1ICAgIGIgdV5eXl51ICA1ICAgICA1ICBiICAgIDUNCjUgICAgYiA0NTU1NTYgIDUgICAgIDUgIGIgICAgNQ0KNUMgICBlICAgICAgICAgZSAgWyAgZSAgZSAgIH41DQo1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTUNCg==");
     }
 
     private void LevelPickerItemInit(ref GameObject levelItem, string levelB64, int x, int y)
@@ -128,20 +145,53 @@ public class GameController : MonoBehaviour
         LevelButton.onClick.AddListener(delegate{LevelPickerClick();});
     }
 
-    private void LoadLevelPicker()
+    public string GetLevelName(string b64) {
+        var level = Common.Base64Decode(b64);
+
+        string[] lines = level.Split(
+            new[] { "\r\n", "\r", "\n" },
+            StringSplitOptions.None
+        );
+
+        return lines[0].Trim();
+    }
+
+    public void ClearLevelList()
     {
+        LoadLevelInput.text = "";
+        KyeFile = new Dictionary<string, string>();
+        LoadLevelPicker();
+    }
+
+    public void LoadLevelPicker()
+    {
+        LoadLevelPicker(Levels.Classic);
+    }
+
+    public void LoadLevelPicker(Dictionary<string, string> levels)
+    {
+        while (LevelPickerContainer.transform.childCount > 0)
+        {
+            DestroyImmediate(LevelPickerContainer.transform.GetChild(0).gameObject);
+        }
+
+        var filter = LoadLevelInput.text.Trim().ToLower();
+
         int y = -5;
         int x = 0;
 
         //var levels = Common.ShuffledLevels();
-        var levels = Levels.Classic.Values;
+        //var levels = Levels.Classic.Values;
 
-        foreach(var levelB64 in levels)
+        foreach (var levelB64 in levels.Values)
         {
-            var levelItem = Instantiate(LevelPickerItem);
-            levelItem.transform.SetParent(LevelPickerContainer.transform, false);
-            LevelPickerItemInit(ref levelItem, levelB64, x, y);            
-            y -= 55;
+            if (filter == "" || GetLevelName(levelB64).ToLower().Contains(filter))
+            {
+                var levelItem = Instantiate(LevelPickerItem);
+                levelItem.transform.SetParent(LevelPickerContainer.transform, false);
+                LevelPickerItemInit(ref levelItem, levelB64, x, y);
+                y -= 55;
+            }
         }
 
         //y -= 5;
@@ -183,12 +233,17 @@ public class GameController : MonoBehaviour
         GamePanel.SetActive(false);
         PauseMenu.SetActive(false);
         HelpPanel.SetActive(false);
+        EditorPanel.SetActive(false);
+        levelEditorBackground.SetActive(false);
         LevelPickerPanel.SetActive(false);
         LevelPickerContainerContainer.SetActive(false);
         //LevelPickerContainerFunContainer.SetActive(false);
         //LevelPickerContainerCommunityContainer.SetActive(false);
         LevelFailed.SetActive(false);
         LevelComplete.SetActive(false);
+
+        FrameSprites.SetActive(true);
+        FrameUI.SetActive(false);
 
         MainMenu.SetActive(true);
         SetCameraPosition(true);
@@ -208,6 +263,8 @@ public class GameController : MonoBehaviour
         PauseMenu.SetActive(false);
         MainMenu.SetActive(false);
         HelpPanel.SetActive(false);
+        EditorPanel.SetActive(false);
+        levelEditorBackground.SetActive(false);
         LevelPickerPanel.SetActive(false);
         LevelFailed.SetActive(false);
         LevelComplete.SetActive(false);
@@ -230,10 +287,27 @@ public class GameController : MonoBehaviour
         HelpPanel.SetActive(true);
     }
 
+    public void ShowEditor()
+    {
+        HideMainMenu();
+
+        FrameSprites.SetActive(false);
+        FrameUI.SetActive(true);
+
+        EditorPanel.SetActive(true);
+        levelEditorBackground.SetActive(true);
+        levelEditor.Prep();
+    }
+
     public void ShowLevelPicker()
     {
         HideMainMenu();
-        LoadLevelInput.text = AppController.Instance.settings.LastLevelPlayed;
+
+        FrameSprites.SetActive(true);
+        FrameUI.SetActive(false);
+        
+        ClearLevelList();
+        LoadLevelInput.text = "";  //AppController.Instance.settings.LastLevelPlayed;
         LevelPickerContainerContainer.SetActive(true);
         //LevelPickerContainer.GetComponent<ScrollRect>().SetY(0);
         LevelPickerPanel.SetActive(true);
@@ -272,13 +346,13 @@ public class GameController : MonoBehaviour
         level += "555555555555555555555555555555" + "\n";
         level += "5Fv*                      * K5" + "\n";
         level += "5vv8 RL  RL   RL   RL  RL 8a 5" + "\n";
-        level += "5vv555555555555555556!75555 a5" + "\n";
-        level += "5vv5!!!!!!            2F155  5" + "\n";
-        level += "5vv5!>   !                5  5" + "\n";
-        level += "5vv5! ** !                2  5" + "\n";
-        level += "5wBH! ** !                !  5" + "\n";
-        level += "5  5!    !                8d 5" + "\n";
-        level += "5B 5!!!!!!                5  5" + "\n";
+        level += "5vv555555555555555556 75555 a5" + "\n";
+        level += "5vv5!!  !!            2F155  5" + "\n";
+        level += "5vv5!R   !                5  5" + "\n";
+        level += "5vv5  **                  2  5" + "\n";
+        level += "5wBH  **                     5" + "\n";
+        level += "5  5!   L!                8d 5" + "\n";
+        level += "5B 5!!  !!                5  5" + "\n";
         level += "5  5                      5 C5" + "\n";
         level += "5 B5     C          T     5  5" + "\n";
         level += "5  5                      5  5" + "\n";
@@ -344,29 +418,99 @@ public class GameController : MonoBehaviour
         LoadLevelInput.text = "";
     }
 
+    public void ClickOpen()
+    {
+        FileBrowser.SetFilters( true, new FileBrowser.Filter( "Kye Levels", ".kye" ) );
+        FileBrowser.SetDefaultFilter( ".kye" );
+
+        FileBrowser.ShowLoadDialog(
+            FileBrowserOnSuccess,
+            FileBrowserOnCancel,
+            FileBrowser.PickMode.Files, false, Application.dataPath
+        );
+    }
+
+    public void FileBrowserOnSuccess(string[] paths)
+    {
+        string filePath = paths[0];
+        LoadLevelWithKyeFile(filePath);
+    }
+    
+    public void FileBrowserOnCancel()
+    {
+        // nothing?
+    }
+
     public void LoadLevelWithKyeFile(string file)
     {
-        if(System.IO.File.Exists(file))
+        if (System.IO.File.Exists(file))
         {
             var level = System.IO.File.ReadAllLines(file);
-            LoadLevelWithString(string.Join("", level));
+            var levelCount = Int32.Parse(level[0].Trim());
+
+            level = level.Skip(1).ToArray();
+
+            if (levelCount <= 1)
+            {
+                var levelLines = string.Join("\n", level);
+                //levelLines.TrimStart('\n', ' ');
+                LoadLevelWithString(levelLines);
+            }
+            else
+            {
+                KyeFile = Get23(level);
+                LoadLevelPicker(KyeFile);
+            }
         }
+    }
+
+    public Dictionary<string, string> Get23(string[] levels)
+    {
+        int i = 0;
+        //string[] levelsRet;
+        string thisLevel = "";
+
+        Dictionary<string, string> LoadKyeFile = new Dictionary<string, string>();
+
+        foreach (string levelLine in levels)
+        {
+            thisLevel = thisLevel + "\n" + levelLine;
+            i++;
+
+            if (i == 23)
+            {
+                thisLevel = thisLevel.Substring(1);
+
+                var b64 = Common.Base64Encode(thisLevel);
+                var lName = GetLevelName(b64);
+                if (LoadKyeFile.ContainsKey(lName))
+                {
+                    Debug.Log("Existing Key: " + lName);
+                    lName = lName + "_" + UnityEngine.Random.Range(1000, 9999);
+                }
+                LoadKyeFile.Add(lName, b64);
+                thisLevel = "";
+                i = 0;
+            }
+        }
+
+        return LoadKyeFile;
     }
 
     public void LoadLevelWithNoR(string levelName, bool setInputOnFail = false)
     {
         HideMainMenu();
 
-        if(levelName.Trim() == "")
+        if (levelName.Trim() == "")
             levelName = "first";
 
         AppController.Instance.settings.LastLevelPlayed = levelName;
         levelName = levelName.ToLower();
 
-        if (Levels.Classic.ContainsKey(levelName))
+        if (KyeFile.Count > 0 && KyeFile.ContainsKey(levelName))
         {
-            CurrentLevelID = LevelNameToID(levelName);
-            LoadLevel(Levels.Classic[levelName]);
+            CurrentLevelID = 0;
+            LoadLevel(KyeFile[levelName]);
             return;
         }
         else if (levelName == "dev")
@@ -374,11 +518,26 @@ public class GameController : MonoBehaviour
             Dev();
             return;
         }
+        else if (Levels.Classic.ContainsKey(levelName))
+        {
+            CurrentLevelID = LevelNameToID(levelName);
+            LoadLevel(Levels.Classic[levelName]);
+            return;
+        }
+        else
+        {
+            levelName = "first";
+            CurrentLevelID = LevelNameToID(levelName);
+            LoadLevel(Levels.Classic[levelName]);
+            return;
+        }
 
-        if(setInputOnFail)
-            LoadLevelInput.text = "No such level...";
+        /*
+        if (setInputOnFail)
+            LoadLevelInput.text = "";
         else
             HasError();
+        */
     }
 
     public void PrevLevel()
@@ -464,7 +623,7 @@ public class GameController : MonoBehaviour
         }
         else if(!Levels.Classic.ContainsKey(attempt.ToLower()))
         {
-            LoadLevelInput.text = "No such level...";
+            LoadLevelInput.text = "";
             return;
         }
 
@@ -483,15 +642,17 @@ public class GameController : MonoBehaviour
             EraseLevel();
             InsertLevel(level);
             AppController.Instance.Save();
+            _canStartMoving = true;
+            Time.timeScale = 1;
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             Debug.Log(ex.ToString());
             HasError();
         }
     }
 
-    private void EraseLevel()
+    public void EraseLevel()
     {
         foreach (Transform item in ItemContainer.transform)
         {
@@ -504,7 +665,7 @@ public class GameController : MonoBehaviour
         _itemCount = 0;
     }
 
-    private void InsertLevel(string level)
+    public void InsertLevel(string level, bool isEditor = false)
     {
         level = Common.Base64Decode(level);
 
@@ -548,28 +709,34 @@ public class GameController : MonoBehaviour
             }
         }
 
-        if(Kye == null)
-        {
-            var itemPrefab = Common.GetPrefabFromItemChar("K");
+        if(isEditor && false) {
+            Time.timeScale = 0;
+        }
+        else {
 
-            var three = Common.GetItem(3, 3);
-            if(three != null)
+            if(Kye == null)
             {
-                Common.DestroyItem(three, false);
+                var itemPrefab = Common.GetPrefabFromItemChar("K");
+
+                var three = Common.GetItem(3, 3);
+                if(three != null)
+                {
+                    Common.DestroyItem(three, false);
+                }
+
+                var item = Instantiate(itemPrefab, new Vector3(3, 3, 0), itemPrefab.transform.rotation);
+                Kye = item.GetComponent<Item>();
             }
 
-            var item = Instantiate(itemPrefab, new Vector3(3, 3, 0), itemPrefab.transform.rotation);
-            Kye = item.GetComponent<Item>();
+            //if(!CurrentLevelName.Contains("MENU"))
+            //    LoadLevelInput.text = CurrentLevelName;
+            
+            Time.timeScale = 1;
+            _timeSinceLevelLoaded = 0;
+            GamePanel.SetActive(true);
+            ResetLevel();
+            UpdateUI();
         }
-
-        if(!CurrentLevelName.Contains("MENU"))
-            LoadLevelInput.text = CurrentLevelName;
-        
-        Time.timeScale = 1;
-        _timeSinceLevelLoaded = 0;
-        GamePanel.SetActive(true);
-        ResetLevel();
-        UpdateUI();
     }
 
     public void NewItem(Item item)
@@ -748,6 +915,9 @@ public class GameController : MonoBehaviour
 
     void Update()
     {
+        if(levelEditor.IsEditing)
+            return;
+
         CheckInputForGameStuff();
 
         if(!GamePanel.activeSelf)
@@ -842,8 +1012,8 @@ public class GameController : MonoBehaviour
         if(Time.time < _nextMoveTime)
             return; // Too soon since last movement
         
-        int x = (int)Kye.transform.position.x + (int)_input.x;
-        int y = (int)Kye.transform.position.y + (int)_input.y;
+        int x = (int)Kye.x + (int)_input.x;
+        int y = (int)Kye.y + (int)_input.y;
 
         var item = Common.GetItem(x, y);
 
@@ -933,7 +1103,7 @@ public class GameController : MonoBehaviour
         }
         if(item.IsDoor)
         {
-            canMove = (item.Direction == _input);
+            canMove = item.Direction == _input;
             return;
         }
         
@@ -947,14 +1117,18 @@ public class GameController : MonoBehaviour
             }
 
             var itemAtSpot = Common.GetItem(spot);
-            if(itemAtSpot == null)
+            if (itemAtSpot == null)
             {
                 item.Move((int)_input.x, (int)_input.y, true);
                 item.IsStuckToSticker = false;
             }
-            else if(itemAtSpot.IsBlackhole)
+            else if (itemAtSpot.IsBlackhole)
             {
                 itemAtSpot.GetComponent<Blackhole>().Consume(item);
+
+                KillPlayer();
+                canMove = false;
+                return;
             }
             else
                 canMove = false;
