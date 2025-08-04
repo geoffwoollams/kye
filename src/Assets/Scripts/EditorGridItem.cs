@@ -1,5 +1,6 @@
 using System;
 using System.Runtime;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -42,6 +43,10 @@ public class EditorGridItem : MonoBehaviour
     {
         transform.SetAsLastSibling();
         _rect.localScale = Vector3.one * 1.2f;
+
+        if (IsBorder() && !_editor._currentItem.StartsWith("wall"))
+            return;
+
         _image.sprite = _editor._newSprite;
     }
 
@@ -67,8 +72,19 @@ public class EditorGridItem : MonoBehaviour
         _editor._newSprite = prefab.GetComponent<SpriteRenderer>().sprite;
     }
 
+    public bool IsBorder() {
+        if (x == 0 || x == 29)
+            return true;
+        else if (y == 0 || y == 19)
+            return true;
+        return false;
+    }
+
     public void OnPointerClick(BaseEventData pointerEventData)
     {
+        if (IsBorder() && !_editor._currentItem.StartsWith("wall"))
+            return;
+
         var pointerEvent = pointerEventData as PointerEventData;
         if (pointerEvent.button == PointerEventData.InputButton.Right)
         {
@@ -80,10 +96,7 @@ public class EditorGridItem : MonoBehaviour
         }
         else if (_editor._currentItem == _setItem)
         {
-            if (_setItem == "blocksquare") SetItem("earth");
-            else if (_setItem == "earth") SetItem("blocksquare");
-
-            else if (_setItem == "stickerlr") SetItem("stickertb");
+            if (_setItem == "stickerlr") SetItem("stickertb");
             else if (_setItem == "stickertb") SetItem("stickerlr");
 
             else if (_setItem == "bouncerright") SetItem("bouncerdown");

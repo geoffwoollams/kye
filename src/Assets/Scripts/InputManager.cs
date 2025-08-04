@@ -190,9 +190,9 @@ public class InputManager : MonoBehaviour
             }
         }
 
-        if(Gamepad.current != null)
+        if (Gamepad.current != null)
         {
-            if(IncludeDpad)
+            if (IncludeDpad)
             {
                 CheckButton(ref Up, Gamepad.current.dpad.up);
                 CheckButton(ref Down, Gamepad.current.dpad.down);
@@ -200,7 +200,7 @@ public class InputManager : MonoBehaviour
                 CheckButton(ref Right, Gamepad.current.dpad.right);
             }
 
-            if(IncludeLeftStick)
+            if (IncludeLeftStick)
             {
                 CheckButton(ref Up, Gamepad.current.leftStick.up);
                 CheckButton(ref Down, Gamepad.current.leftStick.down);
@@ -208,7 +208,7 @@ public class InputManager : MonoBehaviour
                 CheckButton(ref Right, Gamepad.current.leftStick.right);
             }
 
-            if(IncludeRightStick)
+            if (IncludeRightStick)
             {
                 CheckButton(ref Up, Gamepad.current.rightStick.up);
                 CheckButton(ref Down, Gamepad.current.rightStick.down);

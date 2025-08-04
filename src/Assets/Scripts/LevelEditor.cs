@@ -67,6 +67,12 @@ public class LevelEditor : MonoBehaviour
 
     public void ClickSave()
     {
+        if (CountDiamonds() == 0)
+        {
+            GameController.Instance.Message("Error", "You must have at least 1 diamond!");
+            return;
+        }
+
         FileBrowser.SetFilters(true, new FileBrowser.Filter("Kye Levels", ".kye"));
         FileBrowser.SetDefaultFilter(".kye");
 
@@ -104,8 +110,11 @@ public class LevelEditor : MonoBehaviour
             }
             else
             {
+                GameController.Instance.ShowLevelPicker();
                 var KyeFile = GameController.Instance.Get23(level);
+                GameController.Instance.LoadLevelPicker(KyeFile);
 
+                /*
                 foreach (var levelB64 in KyeFile.Values)
                 {
                     // load first item
@@ -114,6 +123,7 @@ public class LevelEditor : MonoBehaviour
                     LoadLevel(levelDecoded);
                     return;
                 }
+                */
             }
         }
     }
@@ -125,6 +135,12 @@ public class LevelEditor : MonoBehaviour
 
     public void ClickPlay()
     {
+        if (CountDiamonds() == 0)
+        {
+            GameController.Instance.Message("Error", "You must have at least 1 diamond!");
+            return;
+        }
+        
         IsEditing = false;
         HideMenu();
         GameController.Instance.HideMainMenu();
@@ -343,7 +359,7 @@ public class LevelEditor : MonoBehaviour
         _mouseImage.sprite = _newSprite;
     }
 
-    public void CountDiamonds()
+    public int CountDiamonds()
     {
         int diamonds = 0;
 
@@ -354,5 +370,7 @@ public class LevelEditor : MonoBehaviour
         }
 
         DiamondCount.text = diamonds.ToString();
+
+        return diamonds;
     }
 }

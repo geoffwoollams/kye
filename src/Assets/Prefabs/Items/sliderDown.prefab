@@ -116,7 +116,7 @@ MonoBehaviour:
   IsBlackhole: 0
   IsDoor: 0
   IsPushable: 1
-  CanPush: 1
+  CanPush: 0
   DestroyOnPlayerContact: 0
   KillsPlayer: 0
   Roundness: 0

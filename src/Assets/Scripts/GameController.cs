@@ -24,9 +24,8 @@ public class GameController : MonoBehaviour
 
     public Canvas MainCanvas;
 
-    public GameObject GamePanel, MainMenu, PauseMenu, HelpPanel, EditorPanel, LevelPickerPanel, LevelFailed, LevelComplete;
-    public GameObject PlayButton, LoadLevelButton, ResumeButton, LevelFailedButton, LevelCompleteButton;
-    public GameObject HelpContentContainer;
+    public GameObject GamePanel, MainMenu, PauseMenu, EditorPanel, LevelPickerPanel, LevelFailed, LevelComplete;
+    public GameObject PlayButton, LoadLevelButton, ResumeButton, LevelFailedButton, LevelCompleteButton, EditorMenuButton, LevelsScreenPrimaryButton, LevelsScreenOpenButton;
     public TMPro.TMP_InputField LoadLevelInput;
     public GameObject LevelPickerItem, LevelPickerContainer;
     public GameObject LevelPickerContainerContainer;
@@ -83,6 +82,10 @@ public class GameController : MonoBehaviour
     public GameObject FrameUI, FrameSprites;
 
     public static Dictionary<string, string> KyeFile = new Dictionary<string, string>();
+
+    public GameObject MessageContainer;
+    public TMPro.TMP_Text MessageTitle, MessageText;
+
     
     void Awake()
     {
@@ -105,9 +108,21 @@ public class GameController : MonoBehaviour
         UpdateUI();
     }
 
+    public void CloseMessage()
+    {
+        MessageContainer.SetActive(false);
+    }
+
+    public void Message(string title, string text)
+    {
+        MessageTitle.text = title;
+        MessageText.text = text;
+        MessageContainer.SetActive(true);
+    }
+
     private void AddToLevelPicker()
     {
-        
+
     }
 
     private void LoadLocalFiles() {
@@ -119,6 +134,7 @@ public class GameController : MonoBehaviour
         var LevelName = levelItem.transform.Find("LevelName").GetComponent<TMPro.TMP_Text>();
         var LevelNotes = levelItem.transform.Find("LevelNotes").GetComponent<TMPro.TMP_Text>();
         var LevelButton = levelItem.GetComponent<Button>();
+        var EditButton = levelItem.transform.Find("Edit").GetComponent<Button>();
 
         var levelItemRect = levelItem.GetComponent<RectTransform>();
         //Common.SetLeft(ref levelItemRect, 20);
@@ -142,7 +158,8 @@ public class GameController : MonoBehaviour
 
         levelItem.name = "LevelItem " + LevelName.text;
 
-        LevelButton.onClick.AddListener(delegate{LevelPickerClick();});
+        LevelButton.onClick.AddListener(delegate { LevelPickerClick(); });
+        EditButton.onClick.AddListener(delegate{LevelPickerEditClick();});
     }
 
     public string GetLevelName(string b64) {
@@ -183,14 +200,54 @@ public class GameController : MonoBehaviour
         //var levels = Common.ShuffledLevels();
         //var levels = Levels.Classic.Values;
 
+        GameObject levelItem, prevItem = null;
+        Selectable selectOnUp = LevelsScreenPrimaryButton.GetComponent<Button>();
+
+        bool doneFirst = false;
+
         foreach (var levelB64 in levels.Values)
         {
             if (filter == "" || GetLevelName(levelB64).ToLower().Contains(filter))
             {
-                var levelItem = Instantiate(LevelPickerItem);
+                levelItem = Instantiate(LevelPickerItem);
                 levelItem.transform.SetParent(LevelPickerContainer.transform, false);
+                var lItem = levelItem.GetComponent<LevelItem>();
+                lItem.b64 = levelB64;
                 LevelPickerItemInit(ref levelItem, levelB64, x, y);
                 y -= 55;
+
+                var itemButton = levelItem.GetComponent<Button>();
+                Navigation itemNav = itemButton.navigation;
+                itemNav.mode = Navigation.Mode.Explicit;
+                itemNav.selectOnUp = selectOnUp;
+                itemButton.navigation = itemNav;
+
+                if (!doneFirst)
+                {
+                    var buttonMenu = LevelsScreenPrimaryButton.GetComponent<Button>();
+                    var nav = buttonMenu.navigation;
+                    nav.selectOnDown = itemButton;
+                    buttonMenu.navigation = nav;
+
+                    var buttonOpen = LevelsScreenOpenButton.GetComponent<Button>();
+                    nav = buttonOpen.navigation;
+                    nav.selectOnDown = itemButton;
+                    buttonOpen.navigation = nav;
+
+                    doneFirst = true;
+                }
+
+                if (prevItem)
+                {
+                    var prevButton = prevItem.GetComponent<Button>();
+                    Navigation prevNav = prevButton.navigation;
+                    prevNav.mode = Navigation.Mode.Explicit;
+                    prevNav.selectOnDown = levelItem.GetComponent<Button>();
+                    prevButton.navigation = prevNav;
+                }
+
+                prevItem = levelItem;
+                selectOnUp = itemButton;
             }
         }
 
@@ -214,6 +271,23 @@ public class GameController : MonoBehaviour
         LoadLevelWithNoR(LevelName.text);
     }
 
+
+    void LevelPickerEditClick()
+    {
+        var csItem = EventSystem.current.currentSelectedGameObject;
+
+        if (csItem == null)
+            return;
+
+        if (csItem.name == "Edit")
+            csItem = csItem.transform.parent.gameObject;
+
+        var levelB64 = csItem.transform.GetComponent<LevelItem>().b64;
+        var levelDecoded = Common.Base64Decode(levelB64);
+        ShowEditor();
+        EditorPanel.GetComponent<LevelEditor>().LoadLevel(levelDecoded);
+    }
+
     public void SetCameraPosition(bool isMainMenu)
     {
         var p = CameraTransform.position;
@@ -232,7 +306,6 @@ public class GameController : MonoBehaviour
         LoadMenuLevel();
         GamePanel.SetActive(false);
         PauseMenu.SetActive(false);
-        HelpPanel.SetActive(false);
         EditorPanel.SetActive(false);
         levelEditorBackground.SetActive(false);
         LevelPickerPanel.SetActive(false);
@@ -250,9 +323,11 @@ public class GameController : MonoBehaviour
 
         SetCameraTouchX(false);
 
-        if(MainMenu.activeSelf)
+        CloseMessage();
+
+        if (MainMenu.activeSelf)
             //if (!EventSystem.current.alreadySelecting)
-                EventSystem.current.SetSelectedGameObject(PlayButton);
+            EventSystem.current.SetSelectedGameObject(PlayButton);
 
         _canStartMoving = true;
     }
@@ -262,7 +337,6 @@ public class GameController : MonoBehaviour
         GamePanel.SetActive(false);
         PauseMenu.SetActive(false);
         MainMenu.SetActive(false);
-        HelpPanel.SetActive(false);
         EditorPanel.SetActive(false);
         levelEditorBackground.SetActive(false);
         LevelPickerPanel.SetActive(false);
@@ -281,12 +355,6 @@ public class GameController : MonoBehaviour
         LoadLevelWithNoR(AppController.Instance.settings.LastLevelPlayed);
     }
 
-    public void ShowHelp()
-    {
-        HideMainMenu();
-        HelpPanel.SetActive(true);
-    }
-
     public void ShowEditor()
     {
         HideMainMenu();
@@ -297,6 +365,8 @@ public class GameController : MonoBehaviour
         EditorPanel.SetActive(true);
         levelEditorBackground.SetActive(true);
         levelEditor.Prep();
+
+        EventSystem.current.SetSelectedGameObject(EditorMenuButton);
     }
 
     public void ShowLevelPicker()
@@ -305,12 +375,14 @@ public class GameController : MonoBehaviour
 
         FrameSprites.SetActive(true);
         FrameUI.SetActive(false);
-        
+
         ClearLevelList();
         LoadLevelInput.text = "";  //AppController.Instance.settings.LastLevelPlayed;
         LevelPickerContainerContainer.SetActive(true);
         //LevelPickerContainer.GetComponent<ScrollRect>().SetY(0);
         LevelPickerPanel.SetActive(true);
+
+        EventSystem.current.SetSelectedGameObject(LevelsScreenPrimaryButton);
     }
 
     public void PauseToggle()
@@ -860,27 +932,33 @@ public class GameController : MonoBehaviour
                 Dev();
         }
 
-        if(Mouse.current != null)
+        if (Gamepad.current != null)
+        {
+            if (Gamepad.current.selectButton.wasPressedThisFrame)
+                PauseToggle();
+        }
+
+        if (Mouse.current != null)
         {
             _lastInputClickPosition = _inputClickPosition;
             _inputClickPosition = Vector2Int.down;
 
-            if(Mouse.current.rightButton.wasPressedThisFrame)
+            if (Mouse.current.rightButton.wasPressedThisFrame)
             {
                 _autoFollowMouse = !_autoFollowMouse;
 
-                if(!_autoFollowMouse && _autoFollowGhost != null)
+                if (!_autoFollowMouse && _autoFollowGhost != null)
                     Destroy(_autoFollowGhost);
             }
 
-            if(Mouse.current.leftButton.wasPressedThisFrame || _autoFollowMouse) 
+            if (Mouse.current.leftButton.wasPressedThisFrame || _autoFollowMouse)
             {
                 var clickPosition = CameraTransform.GetComponent<Camera>().ScreenToWorldPoint(Mouse.current.position.ReadValue());
                 _inputClickPosition.x = Mathf.RoundToInt(clickPosition.x);
                 _inputClickPosition.y = Mathf.RoundToInt(clickPosition.y);
             }
 
-            if(_inputClickPosition != Vector2Int.down && Common.InBounds(_inputClickPosition))
+            if (_inputClickPosition != Vector2Int.down && Common.InBounds(_inputClickPosition))
                 StepToClickPosition();
         }
 
@@ -961,10 +1039,6 @@ public class GameController : MonoBehaviour
             if (LevelPickerPanel.activeSelf)
             {
                 LevelPickerContainer.GetComponent<ScrollRect>().Scroll(scrollY);
-            }
-            else if(HelpPanel.activeSelf)
-            {
-                HelpContentContainer.GetComponent<ScrollRect>().Scroll(scrollY);
             }
         }
     }
